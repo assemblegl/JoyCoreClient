@@ -11,14 +11,14 @@ public class Main {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println("start time:"+sdf.format(new Date()));
 		
-		ExecutorService pool = Executors.newFixedThreadPool(50);
+		ExecutorService pool = Executors.newFixedThreadPool(10);
 		
 		//new Thread(new ProcessThread()).start();				
 
 		//int maxarg = Integer.valueOf(args[0]);
 		
 		
-		for(int i = 0 ;i<50;i++){
+		for(int i = 0 ;i<20;i++){
 			pool.execute(new Client());
 		}
 		
