@@ -12,16 +12,22 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class Client implements Runnable{
-	
-	static final boolean SSL = System.getProperty("ssl") != null;
-    static final String HOST = System.getProperty("host", "127.0.0.1");
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8322"));
-    //static final int COUNT = Integer.parseInt(System.getProperty("count", "1"));
+	private String sql;
+	private boolean ssl;
+    private String ip ;
+    private int port ;   
 
+    public Client(String ip,int port,boolean ssl,String sql){
+    	this.ip = ip;
+    	this.port = port;
+    	this.ssl = ssl;
+    	this.sql = sql;
+    }
+    
     public  void run() {
         // Configure SSL.
         SslContext sslCtx = null;
-        if (SSL) {
+        if (ssl) {
             try {
 				sslCtx = SslContextBuilder.forClient()
 				    .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
@@ -31,37 +37,44 @@ public class Client implements Runnable{
         } else {
             sslCtx = null;
         }
-
-        
-        String sql = "select * from hive2.default.card limit 100";
+                
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group)
              .channel(NioSocketChannel.class)
-             .handler(new ClientInitializer(sslCtx,sql));
+             .handler(new ClientInitializer(sslCtx,ip,port,sql));
 
             // Make a new connection.
             ChannelFuture f;
 			try {
-				f = b.connect(HOST, PORT).sync();
+				f = b.connect(ip, port).sync();
 				f.channel().closeFuture().sync();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-            // Wait until the connection is closed.
-            
-            // Get the handler instance to retrieve the answer.
-            //ClientHandler handler =
-            //    (ClientHandler) f.channel().pipeline().last();
-
-            // Print out the answer.
-            //System.err.format("Factorial of %,d is: %,d", COUNT, handler.getFactorial());
         } finally {
             group.shutdownGracefully();
         }
     }
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+    
 
 }

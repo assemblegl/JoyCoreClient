@@ -9,10 +9,14 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 	
 	private final SslContext sslCtx;
 	private String sql;
+	private String ip;
+	private int port;
 	
-    public ClientInitializer(SslContext sslCtx,String sql) {
+    public ClientInitializer(SslContext sslCtx,String ip,int port,String sql) {
         this.sslCtx = sslCtx;
         this.sql = sql;
+        this.ip = ip;
+        this.port = port;
     }
 
     @Override
@@ -20,7 +24,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = ch.pipeline();
 
         if (sslCtx != null) {
-            pipeline.addLast(sslCtx.newHandler(ch.alloc(), Client.HOST, Client.PORT));
+            pipeline.addLast(sslCtx.newHandler(ch.alloc(),ip,port));
         }
 
         // Enable stream compression (you can remove these two if unnecessary)

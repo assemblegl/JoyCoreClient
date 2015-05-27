@@ -21,7 +21,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String>{
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, final String msg) {
-    	System.out.println("channelRead0:"+msg+".");
+    	System.out.println("client:"+msg+"|");
     	ctx.close();   	
     }    
 

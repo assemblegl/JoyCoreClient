@@ -8,29 +8,39 @@ import java.util.concurrent.Executors;
 public class Main { 
 	
 	public static void main(String[] args) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		System.out.println("start time:"+sdf.format(new Date()));
-		
-		ExecutorService pool = Executors.newFixedThreadPool(10);
-		
-		//new Thread(new ProcessThread()).start();				
-
-		//int maxarg = Integer.valueOf(args[0]);
-		
-		
-		for(int i = 0 ;i<20;i++){
-			pool.execute(new Client());
+		if(args.length < 6){
+			print();
+			System.exit(1);
 		}
 		
-		/*while(!pool.isTerminated()){						
-			try {			
-				Thread.sleep(1000);											
-			} catch (InterruptedException e) {							
-				e.printStackTrace();
-			}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");						
+		
+		int num = Integer.valueOf(args[0]);
+		int conNum = Integer.valueOf(args[1]);
+		String ip = args[2];
+		int port = Integer.valueOf(args[3]);
+		boolean ssl = false;
+		
+		if("1".equals(args[4])){
+			ssl = true;
+		}else{
+			ssl = false;
 		}
 		
-		System.out.println("end time:"+sdf.format(new Date()));*/
+		String sql = args[5];
+		
+		System.out.println("start time:"+sdf.format(new Date())+",num:"+num+",conNum:"+conNum+",ip:"+ip+",port:"+port+",ssl:"+ssl+",sql:"+sql+".");
+		ExecutorService pool = Executors.newFixedThreadPool(conNum);				
+		
+		for(int i = 0 ;i<num;i++){
+			pool.execute(new Client(ip,port,ssl,sql));
+		}
+		
+		System.out.println("end time:"+sdf.format(new Date()));
+	}
+	
+	private static void print(){
+		System.out.println("num conNum ip port ssl sql");
 	}
 
 }
